@@ -136,12 +136,12 @@ class AnimeFaceSegment:
 
     def load_model(self):
         remote_model_path = "https://huggingface.co/bdsqlsz/qinglong_controlnet-lllite/resolve/main/Annotators/UNet.pth"
-        modelpath = os.path.join(self.model_dir, "UNet.pth")
+        modelpath = os.path.join(self.model_dir, "Unet.pth")
         if not os.path.exists(modelpath):
-            from scripts.utils import load_file_from_url
+            from basicsr.utils.download_util import load_file_from_url
             load_file_from_url(remote_model_path, model_dir=self.model_dir)
         net = UNet()
-        ckpt = torch.load(modelpath, map_location=self.device)
+        ckpt = torch.load(modelpath)
         for key in list(ckpt.keys()):
             if 'module.' in key:
                 ckpt[key.replace('module.', '')] = ckpt[key]
@@ -170,3 +170,5 @@ class AnimeFaceSegment:
             img = rearrange(seg,'h w c -> w c h')
             img = [[PALETTE[np.argmax(val)] for val in buf]for buf in img]
             return np.array(img).astype(np.uint8)
+
+    
